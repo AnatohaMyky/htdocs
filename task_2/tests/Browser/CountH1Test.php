@@ -14,7 +14,7 @@ class CountH1Test extends DuskTestCase
     public function testCountH1Elements()
     {
         $this->browse(function (Browser $browser) {
-            $h1Count = $browser->visit('https://en.wikipedia.org/wiki/Main_Page')
+            $h1Count = $browser->visit('https://en.wikipedia.org')
                                ->script("return document.querySelectorAll('h1').length;")[0];
     
             $this->assertGreaterThan(0, $h1Count, 'На сторінці має бути хоча б один H1 елемент.');
