@@ -1,4 +1,5 @@
 <?php
+// php count_character.php a
 if (php_sapi_name() == "cli") {
     if ($argc < 2) {
         echo "Використання: php count_character.php <символ>\n";
@@ -8,25 +9,32 @@ if (php_sapi_name() == "cli") {
 } else {
     $character = isset($_GET['char']) ? $_GET['char'] : '';
     if (empty($character)) {
-        echo "Будь ласка, надайте символ через параметр 'char' у запиті GET.";
+        echo "Будь ласка, надайте символ через параметр 'char' у запиті GET.\n";
         exit;
     }
 }
 
-if (strlen($character) !== 1) {
-    echo "Помилка: Будь ласка, надайте рівно один символ.";
+if (mb_strlen($character, 'UTF-8') !== 1) {
+    echo "Помилка: Будь ласка, надайте рівно один символ.\n";
     exit;
 }
 
-$url = "https://www.wikipedia.org/";
+$url = "https://uk.wikipedia.org/";
 
-$pageContent = @file_get_contents($url);
-if ($pageContent === FALSE) {
-    echo "Помилка: Неможливо отримати вміст з $url.";
-    exit;
+try {
+    $pageContent = file_get_contents($url);
+    if ($pageContent === FALSE) {
+        throw new Exception("Неможливо отримати вміст з $url.");
+    }
+
+    $pageContent = mb_strtolower($pageContent, 'UTF-8');
+    $character = mb_strtolower($character, 'UTF-8');
+
+    $count = mb_substr_count($pageContent, $character, 'UTF-8');
+
+    echo "Символ '{$character}' зустрічається {$count} разів на головній сторінці Wikipedia.\n";
+} catch (Exception $e) {
+    echo "Помилка: " . $e->getMessage() . "\n";
+    exit(1);
 }
-
-$count = substr_count($pageContent, $character);
-
-echo "Символ '{$character}' зустрічається {$count} разів на головній сторінці Wikipedia.\n";
 ?>
